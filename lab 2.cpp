@@ -1,171 +1,116 @@
-#include <iostream>
 #include <bits/stdc++.h>
 
 using namespace std;
 
-struct Node* head = NULL;
-
-struct Node
-{
-    int y;
-    int x;
-    Node *next;
+class Node{
+    public:
+        int x;
+        int y;
+        Node *next;
 };
 
-void AddFirst(int x , int y)
-{
-    Node* new_node = new Node;
-
-    new_node->x  = x;
-    new_node->y  = y;
-
-    new_node->next = head;
-
-    head = new_node;
+void AddFirst( Node **head_ref, int a, int b){
+ Node *new_node = new Node();
+new_node->x = a;
+new_node->y = b;
+new_node->next = *head_ref;
+*head_ref = new_node;
 }
 
-void DelFirst()
-{
-    if (head == NULL)
-        {
-            cout<<"-1";
-            return ;
-        }
+void DelFirst( Node **head_ref){
+if(*head_ref == NULL) {cout << "-1\n"; return ;}
 
-    Node* temp = head;
-    head = head->next;
-
-    free(temp);
+*head_ref = (*head_ref)->next;
 
 }
 
-void Del( int x,int y)
-{
+void Del( Node **head_ref, int a, int b){
+     Node *temp = *head_ref, *prev;
 
-   if (head == NULL)
-      {
-        cout<<"-1";
-        return ;
-      }
+    if(temp==NULL){ cout << "-1\n"; return;}
+	if(temp!=NULL && temp->x==a && temp->y==b){
+		*head_ref = temp->next;
+		free(temp);
+		return;
+	}
 
+	while((temp != NULL)  && (temp->x !=a) && (temp->y !=b)){
+        prev = temp;
+        temp = temp->next;
+	}
 
-   Node* temp = head;
+	if(temp==NULL) { cout << "-1\n"; return;}
+	else{
+	prev->next = temp->next;
+	free(temp);}
 
-   Node* previous = NULL;
-
-    if ((head->x)==x&&(head->y)==y)
-    {
-        head = temp->next;
-        free(temp);
-        return;
-    }
-
-
-    for (int i=0; temp!=NULL; i++)
-         {
-             if(temp->x==x&&temp->y==y)
-             {
-                 break;
-             }
-             previous = temp;
-             temp = temp->next;
-         }
-
-    if (temp == NULL )
-      {
-        cout<<"-1 Not found";
-        return;
-    }
-
-    struct Node *next = temp->next;
-
-    free(temp);
-
-    previous->next = next;
 }
 
-void Search(int d)
-{
-    struct Node* temp = head;
-    int x1,y1;
-    while (temp!= NULL) {
-        x1 = temp->x;
-        y1 = temp->y;
-        if(x1*x1+y1*y1<=d*d)
-        {
-            cout<<"("<<x1<<","<<y1<<")";
-        }
-        temp=temp->next;
-    }
+void Search_d( Node **head_ref, float d){
+    Node* temp;
+    temp=*head_ref;
+    int c=0;
+	while(temp!=NULL)
+	{
+		float dist=(temp->x)*(temp->x)+(temp->y)*(temp->y);
+		if(dist<=d*d) c++;
+		temp=temp->next;
+	}
+	if(c==0) {cout << "-1"; return ;}
+	else {cout<< c ; return ;}
 }
 
-string Search(int x,int y)
-{
-    struct Node* temp = head;
-
-    while (temp!= NULL) {
-
-        if((temp->x)==x&&(temp->y)==y)
-        {
-            return "True";
-        }
-        temp=temp->next;
-    }
-    return "False";
+int Search(Node **head_ref, int a, int b ){
+Node *temp ;
+temp = *head_ref;
+while(temp != NULL){
+    if((temp->x==a) && (temp->y==b)) return 1;
+           temp = temp->next;
+           }
+if(temp ==NULL) return 0;
 }
 
-int Length()
-{
-    struct Node* temp = head;
-    int l=0;
-    while (temp!= NULL) {
-        l++;
-        temp=temp->next;
-    }
-    return l;
+int Length( Node **head_ref){
+int c=0;
+ Node *temp = *head_ref;
+while(temp != NULL){
+    c++;
+    temp = temp->next;
 }
-int main()
-{
-    long long int q;
-    cin>>q;
+return c;
 
-    while(q--)
-    {
-        int choice;
-        cin>>choice;
-        if(choice==1)
-        {
-            int x,y;
-            cin>>x>>y;
-            AddFirst(x,y);
-        }
-        else if(choice==2)
-        {
-            DelFirst();
-        }
-        else if(choice==3)
-        {
-            int x,y;
-            cin>>x>>y;
-            Del(x,y);
-        }
-        else if(choice==4)
-        {
-            int d;
-            cin>>d;
-            Search(d);
-            cout<<endl;
+}
 
-        }
-        else if(choice==5)
-        {
-            int x,y;
-            cin>>x>>y;
-            cout<<Search(x,y)<<endl;
-        }
-        else if(choice==6)
-        {
-            cout<<Length()<<endl;
-        }
+int main(){
+    Node *head = NULL;
+
+    long long int T;
+    cin >>T;
+    while(T--){
+        int fn, x, y;
+        float d;
+        cin>>fn;
+        switch(fn){
+
+            case 1: cin >> x >> y;
+                    AddFirst(&head, x, y);
+                    break;
+            case 2: DelFirst(&head);
+                    break;
+            case 3: cin >> x >> y;
+                    Del(&head, x, y);
+                    break;
+            case 4: cin >> d;
+                    Search_d(&head, d);
+                    break;
+            case 5: cin >> x >> y;
+                    if(Search(&head, x, y))cout<<"True\n";
+                    else cout<<"False\n";
+                    break;
+            case 6: cout << Length(&head) <<endl;
+                    break;
+            default: cout << "No such function" << endl;
+
     }
+}
 }
